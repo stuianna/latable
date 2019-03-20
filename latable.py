@@ -8,6 +8,14 @@ __version__ = '0.0.1'
 filenameRowSelector = '+r'
 filenameColumnSelector = '+c'
 
+# These are the selectors which define the position inside a latex file
+# For example the tage mytable would be represented in the latex file as <mytable>
+tagStart = '<'
+tagEnd = '>'
+
+# Make a backup of latex files before writing tables to them
+writeBackup = True
+
 #Get the working directory for either a frozen app or dev app
 if getattr(sys, 'frozen', False):
     #Set the path to the directory where the executable is located
@@ -130,7 +138,8 @@ def processArgs(options):
             #Search for the tag with name of input file in output file
             #If the tag exists, write the output in that location
             #If tag doesn't exist print error
-            pass
+            for inputFile in options['target']:
+                processTag(inputFile,options['output'][0],options['column'],options['row'])
 
         elif options['directory'] is not None:
             #An output file was given and a source directory for csv
@@ -172,10 +181,6 @@ def processArgs(options):
                 output = processSingle(fileName,options['column'],options['row'])
                 if output is not None:
                     print(output)
-
-
-
-
     return
 
 def processTag(inputFile,outputFile,useColumn,useRow):
@@ -185,8 +190,52 @@ def processTag(inputFile,outputFile,useColumn,useRow):
     #If the tag is found, then process the input and print it at that location
     #If not foudn then print message to stdout.
 
+    #Modify the selectors to match the filename
+    if filenameRowSelector in inputFile:
+        useRow = True
 
-    return
+    if filenameColumnSelector in inputFile:
+        useColumn = False
+
+    #Strip extra comonents of file name to get tag
+    tagName = inputFile
+    tagName = tagName.replace(filenameRowSelector,'')
+    tagName = tagName.replace(filenameColumnSelector,'')
+    tagName = tagName.replace('.csv','')
+
+    #Get the table in latex form
+    outputTable = processSingle(inputFile,useColumn,useRow)
+
+    # Check a valid table was produced
+    if outputTable is None:
+        #Problem making table / file doesn' texist
+        return None
+
+    #Look for the tag in the output file.
+    try:
+        lines = open(outputFile).read().splitlines()
+
+    except:
+        print('Output file: {} doesn not exist'.format(outputFile))
+        return None
+
+    lineNumber = None
+
+    for index,line in enumerate(lines):
+        if str(tagStart + tagName + tagEnd) in line:
+            if writeBackup is True:
+                open(outputFile.replace('.tex','') + '_backup' + '.tex','w').write('\n'.join(lines))
+
+            lineNumber = index
+            lines[index] = outputTable
+            open(outputFile,'w').write('\n'.join(lines))
+            break
+
+    #Lines is still equal to none if tag wasn't found
+    if lineNumber is None:
+        print('Tag "{}" not found in file: {}'.format(tagName,outputFile))
+
+    return lineNumber
 
 def processSingle(inputFile,useColumn,useRow):
 
@@ -203,7 +252,7 @@ def processSingle(inputFile,useColumn,useRow):
     data,rows,columns,name = openCSV(inputFile,useColumn,useRow)
 
     if data is None:
-        return
+        return None
 
     return printTable(data,rows,columns,name,useColumn,useRow);
 
