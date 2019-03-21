@@ -13,6 +13,9 @@ filenameColumnSelector = '+c'
 tagStart = '<'
 tagEnd = '>'
 
+# The default image width
+imageWidth = 0.8
+
 # Make a backup of latex files before writing tables to them
 writeBackup = True
 
@@ -71,6 +74,15 @@ def printTable(data,rows,columns,title,useCol,useRow):
     outString = outString + '\t\\label{tab:' + title + '}' + '\n'
     outString = outString + '\end{table}' + '\n'
     return outString
+
+def printImage(fileName,imageName,relativePath):
+
+    output = None
+
+
+
+
+    return output
 
 
 def makeArgs():
@@ -236,6 +248,13 @@ def processTag(inputFile,outputFile,useColumn,useRow):
         print('Tag "{}" not found in file: {}'.format(tagName,outputFile))
 
     return lineNumber
+
+def processImage(inputFile,outputFile):
+
+    #Given an input file, detemine the label (tag name)
+    #Determine the relative paths between the image and the output file.
+
+    return
 
 def processSingle(inputFile,useColumn,useRow):
 
