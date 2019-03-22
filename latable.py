@@ -156,7 +156,9 @@ def processArgs(options):
         elif options['directory'] is not None:
             #An output file was given and a source directory for csv
             #Do the same as below, excet get the csvs from specified directory
-            pass
+            for fileName in os.listdir(os.path.dirname(options['directory'][0])):
+                if fileName.endswith(".csv"):
+                    processTag(os.path.join(options['directory'][0],fileName),options['output'][0],options['column'],options['row'])
 
         else:
             #An output file is given with no target input
@@ -182,7 +184,6 @@ def processArgs(options):
                 output = processSingle(os.path.join(options['directory'][0],fileName),options['column'],options['row'])
                 if output is not None:
                     print(output)
-        pass
 
     else:
         #No intput directory, or single file or output file specified
