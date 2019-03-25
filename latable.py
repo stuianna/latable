@@ -99,7 +99,7 @@ def makeArgs():
             metavar='TARGET',
             type=str,
             nargs='*',
-            help='Target file from which to generate a table. Adds all csv files in working directory if not specified.')
+            help='Target file from which to generate latex. Adds all .csv, .jpg, .png and .jpeg files in working directory if not specified.')
     parser.add_argument('-d','--directory',
             type=str,
             nargs=1,
@@ -107,7 +107,7 @@ def makeArgs():
     parser.add_argument('-o','--output',
             type=str,
             nargs=1,
-            help='Target output latex file. Generated tables are placed in specified tag "<filename>" locations.')
+            help='Target output latex file. Generated Latex is placed in specified tag "<filename>" locations.')
     parser.add_argument('-c','--column',
             action='store_false',
             default=True,
