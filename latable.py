@@ -162,8 +162,8 @@ def processArgs(options):
         elif options['directory'] is not None:
             #An output file was given and a source directory for csv
             #Do the same as below, excet get the csvs from specified directory
-            for fileName in os.listdir(os.path.dirname(options['directory'][0])):
-                if fileName.endswith(".csv"):
+            for fileName in os.listdir(options['directory'][0]):
+                if fileName.endswith(".csv") or os.path.splitext(fileName)[1] in supportedImages:
                     processTag(os.path.join(options['directory'][0],fileName),options['output'][0],options['column'],options['row'])
 
         else:
@@ -171,27 +171,34 @@ def processArgs(options):
             #Search the current directory recursivly for csvs.
             #For each csv found, look for the tag, if tag exists write data there
             for fileName in os.listdir(os.path.dirname(dir_path)):
-                if fileName.endswith(".csv"):
+                if fileName.endswith(".csv") or os.path.splitext(fileName)[1] in supportedImages:
                     processTag(os.path.join(dir_path,fileName),options['output'][0],options['column'],options['row'])
 
     # Check if an input file was passed
     #Here one file is just printed to stdout, this is good for vim buffer
     elif options['target']is not None:
-        for inputFile in options['target']:
-            output = processSingle(inputFile,options['column'],options['row'])
-            if output is not None:
-                print(output)
+        for fileName in options['target']:
+            if fileName.endswith(".csv"):
+                output = processSingle(fileName,options['column'],options['row'])
+                if output is not None:
+                    print(output)
+            elif os.path.splitext(fileName)[1] in supportedImages:
+                #Here the output file name is the current directory
+                print(processImage(fileName,dir_path))
 
     # No input file or output file was passed
     # Check if a directory was specified before continuing
     elif options['directory'] is not None:
         # Directory specified.
         # Now find all csv's in the directory and print them to stdout
-        for fileName in os.listdir(os.path.dirname(options['directory'][0])):
+        for fileName in os.listdir(options['directory'][0]):
             if fileName.endswith(".csv"):
                 output = processSingle(os.path.join(options['directory'][0],fileName),options['column'],options['row'])
                 if output is not None:
                     print(output)
+            elif os.path.splitext(fileName)[1] in supportedImages:
+                #Here the output file name is the current directory
+                print(processImage(os.path.join(options['directory'][0],fileName),dir_path))
 
     else:
         #No intput directory, or single file or output file specified
@@ -202,6 +209,10 @@ def processArgs(options):
                 output = processSingle(fileName,options['column'],options['row'])
                 if output is not None:
                     print(output)
+            elif os.path.splitext(fileName)[1] in supportedImages:
+                #Here the output file name is the current directory
+                print(processImage(fileName,dir_path))
+
     return
 
 def processTag(inputFile,outputFile,useColumn,useRow):
@@ -224,12 +235,22 @@ def processTag(inputFile,outputFile,useColumn,useRow):
     tagName = tagName.replace(filenameColumnSelector,'')
     tagName = tagName.replace('.csv','')
 
-    #Get the table in latex form
-    outputTable = processSingle(inputFile,useColumn,useRow)
+    for extension in supportedImages:
+        tagName = tagName.replace(extension,'')
 
-    # Check a valid table was produced
-    if outputTable is None:
-        #Problem making table / file doesn' texist
+    if os.path.splitext(inputFile) == '.csv':
+        #Get the table in latex form
+        output = processSingle(inputFile,useColumn,useRow)
+
+        # Check a valid table was produced
+        if output is None:
+            #Problem making table / file doesn' texist
+            return None
+
+    elif os.path.splitext(inputFile)[1] in supportedImages:
+        output = processImage(inputFile,outputFile)
+
+    else:
         return None
 
     #Look for the tag in the output file.
@@ -248,7 +269,7 @@ def processTag(inputFile,outputFile,useColumn,useRow):
                 open(outputFile.replace('.tex','') + '_backup' + '.tex','w').write('\n'.join(lines))
 
             lineNumber = index
-            lines[index] = outputTable
+            lines[index] = output
             open(outputFile,'w').write('\n'.join(lines))
             break
 
