@@ -16,6 +16,8 @@ tagEnd = '>'
 # The default image width
 imageWidth = 0.8
 
+supportedImages = ['.jpg','.png','.jpeg']
+
 # Make a backup of latex files before writing tables to them
 writeBackup = True
 
@@ -261,8 +263,15 @@ def processImage(inputFile,outputFile):
     #Given an input file, detemine the label (tag name)
     #Determine the relative paths between the image and the output file.
 
+    #Replace any possible extension and exteded path to just get label name
+    name = os.path.basename(inputFile)
+    for extension in supportedImages:
+        name = name.replace(extension,'')
 
-    return
+    #Get the relave path between two images
+    path = os.path.relpath(inputFile,os.path.dirname(outputFile))
+
+    return printImage(name,path)
 
 def processSingle(inputFile,useColumn,useRow):
 
@@ -288,10 +297,6 @@ def processSingle(inputFile,useColumn,useRow):
 if __name__ == '__main__':
 
     #Program eneters and branches from here.
-
-    print(printImage('test','../feg'))
-    sys.exit()
-
     parser = makeArgs()
     options = vars(parser.parse_args())
     processArgs(options)
