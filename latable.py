@@ -75,15 +75,19 @@ def printTable(data,rows,columns,title,useCol,useRow):
     outString = outString + '\end{table}' + '\n'
     return outString
 
-def printImage(fileName,imageName,relativePath):
+def printImage(name,relativePath):
 
     output = None
 
-
-
-
-    return output
-
+    outstring = ''
+    outstring = outstring + '\\begin{figure}[H]\n'
+    outstring = outstring + '\t\\centering\n'
+    outstring = outstring + '\t\\captionsetup{justification=centering}\n'
+    outstring = outstring + str('\t\\includegraphics[width=%.2f\\linewidth]{%s}\n' % (imageWidth,relativePath))
+    outstring = outstring + '\t\\caption{<++>}\n'
+    outstring = outstring + str('\t\\label{fig:%s}\n' %(name))
+    outstring = outstring + '\\end{figure}\n'
+    return outstring
 
 def makeArgs():
 
@@ -257,6 +261,7 @@ def processImage(inputFile,outputFile):
     #Given an input file, detemine the label (tag name)
     #Determine the relative paths between the image and the output file.
 
+
     return
 
 def processSingle(inputFile,useColumn,useRow):
@@ -283,6 +288,9 @@ def processSingle(inputFile,useColumn,useRow):
 if __name__ == '__main__':
 
     #Program eneters and branches from here.
+
+    print(printImage('test','../feg'))
+    sys.exit()
 
     parser = makeArgs()
     options = vars(parser.parse_args())
