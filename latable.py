@@ -164,7 +164,9 @@ def processArgs(options):
             #An output file is given with no target input
             #Search the current directory recursivly for csvs.
             #For each csv found, look for the tag, if tag exists write data there
-            pass
+            for fileName in os.listdir(os.path.dirname(dir_path)):
+                if fileName.endswith(".csv"):
+                    processTag(os.path.join(dir_path,fileName),options['output'][0],options['column'],options['row'])
 
     # Check if an input file was passed
     #Here one file is just printed to stdout, this is good for vim buffer
@@ -211,7 +213,7 @@ def processTag(inputFile,outputFile,useColumn,useRow):
         useColumn = False
 
     #Strip extra comonents of file name to get tag
-    tagName = inputFile
+    tagName = os.path.basename(inputFile)
     tagName = tagName.replace(filenameRowSelector,'')
     tagName = tagName.replace(filenameColumnSelector,'')
     tagName = tagName.replace('.csv','')
@@ -273,6 +275,8 @@ def processSingle(inputFile,useColumn,useRow):
 
     if data is None:
         return None
+
+    name = os.path.basename(name)
 
     return printTable(data,rows,columns,name,useColumn,useRow);
 
