@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import pandas as pd
 import argparse
 import sys
@@ -21,12 +23,8 @@ supportedImages = ['.jpg','.png','.jpeg']
 # Make a backup of latex files before writing tables to them
 writeBackup = True
 
-#Get the working directory for either a frozen app or dev app
-if getattr(sys, 'frozen', False):
-    #Set the path to the directory where the executable is located
-    dir_path = os.path.dirname(sys.executable) + os.sep
-else:
-    dir_path = os.path.dirname(os.path.abspath(__file__)) + os.sep
+# Get the directory from where the script is called
+dir_path = os.getcwd() + os.sep
 
 def printTable(data,rows,columns,title,useCol,useRow):
 
