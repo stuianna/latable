@@ -161,7 +161,7 @@ def processArgs(options):
             #An output file was given and a source directory for csv
             #Do the same as below, excet get the csvs from specified directory
             for fileName in os.listdir(options['directory'][0]):
-                if fileName.endswith(".csv") or os.path.splitext(fileName)[1] in supportedImages:
+                if os.path.splitext(fileName)[1] == '.csv' or os.path.splitext(fileName)[1] in supportedImages:
                     processTag(os.path.join(options['directory'][0],fileName),options['output'][0],options['column'],options['row'])
 
         else:
@@ -236,7 +236,7 @@ def processTag(inputFile,outputFile,useColumn,useRow):
     for extension in supportedImages:
         tagName = tagName.replace(extension,'')
 
-    if os.path.splitext(inputFile) == '.csv':
+    if os.path.splitext(inputFile)[1] == '.csv':
         #Get the table in latex form
         output = processSingle(inputFile,useColumn,useRow)
 
