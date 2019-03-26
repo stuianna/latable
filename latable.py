@@ -23,6 +23,9 @@ supportedImages = ['.jpg','.png','.jpeg']
 # Make a backup of latex files before writing tables to them
 writeBackup = True
 
+#Boolen value so a backup is only make once.
+backupMade = False
+
 # Get the directory from where the script is called
 dir_path = os.getcwd() + os.sep
 
@@ -215,6 +218,8 @@ def processArgs(options):
 
 def processTag(inputFile,outputFile,useColumn,useRow):
 
+    global backupMade
+
     #Here we need to get the intput file name and look for it as a tag
     #in the output file
     #If the tag is found, then process the input and print it at that location
@@ -263,8 +268,9 @@ def processTag(inputFile,outputFile,useColumn,useRow):
 
     for index,line in enumerate(lines):
         if str(tagStart + tagName + tagEnd) in line:
-            if writeBackup is True:
+            if writeBackup is True and backupMade is False:
                 open(outputFile.replace('.tex','') + '_backup' + '.tex','w').write('\n'.join(lines))
+                backupMade = True
 
             lineNumber = index
             lines[index] = output
